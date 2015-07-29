@@ -1,0 +1,78 @@
+[
+  {
+    "line": 1,
+    "elements": [
+      {
+        "line": 3,
+        "name": "Authenticate the user and allow him to access the home page of the application",
+        "description": "",
+        "id": "login-test-to-allow-the-customer-to-login;authenticate-the-user-and-allow-him-to-access-the-home-page-of-the-application",
+        "type": "scenario",
+        "keyword": "Scenario",
+        "steps": [
+          {
+            "result": {
+              "duration": 220141358,
+              "status": "passed"
+            },
+            "line": 5,
+            "name": "a username \u0027dspandiyan@gmail.com\u0027 and password \u0027dspandiyan@123\u0027",
+            "match": {
+              "arguments": [
+                {
+                  "val": "dspandiyan@gmail.com",
+                  "offset": 12
+                },
+                {
+                  "val": "dspandiyan@123",
+                  "offset": 48
+                }
+              ],
+              "location": "LoginSteps.setCredential(String,String)"
+            },
+            "keyword": "Given "
+          },
+          {
+            "result": {
+              "duration": 141411,
+              "status": "passed"
+            },
+            "line": 7,
+            "name": "username \u0027dspandiyan@gmail.com\u0027 and password \u0027dspandiyan@123\u0027",
+            "match": {
+              "arguments": [
+                {
+                  "val": "dspandiyan@gmail.com",
+                  "offset": 10
+                },
+                {
+                  "val": "dspandiyan@123",
+                  "offset": 46
+                }
+              ],
+              "location": "LoginSteps.checkCredentials(String,String)"
+            },
+            "keyword": "When "
+          },
+          {
+            "result": {
+              "duration": 4671112,
+              "status": "passed"
+            },
+            "line": 9,
+            "name": "Show the home page",
+            "match": {
+              "location": "LoginSteps.showHomePage()"
+            },
+            "keyword": "Then "
+          }
+        ]
+      }
+    ],
+    "name": "Login Test To allow the customer to login",
+    "description": "",
+    "id": "login-test-to-allow-the-customer-to-login",
+    "keyword": "Feature",
+    "uri": "feature/login/login.feature"
+  }
+]

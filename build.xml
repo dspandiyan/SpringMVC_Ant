@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<project name="InSight360" basedir="." default="build">
+	<property environment="env"/>
+	<property file="build.properties"/>
+	
+	<path id="classpath">
+		<fileset dir="${src.lib.dir}">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="${env.catalina.home}/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+		<pathelement location="test/classes"/>
+	</path>
+	
+	
+	<!-- Target to clean previous build artifacts -->
+	<target name="clean">
+		<echo message="Cleaning the previous build files..."/>
+		<delete dir="${out.dir}" failonerror="yes" />
+	</target>
+	
+	<!-- Target prepare the files to build and generate war file -->
+	<target name="prepare">
+		<echo message="Preparing the files to build"/>
+		<mkdir dir="${out.dir}"/>
+		<mkdir dir="${out.web-inf.classes.dir}"/>		
+		<antcall target="copy"/>
+	</target>
+	
+	<!-- Target copies all the jsps,xmls, properties etc to out directory --> 
+	<target name="copy">
+		<copydir dest="${out.dir}" src="${src.web.dir}"/>
+		
+		<!-- <antcall target="update-env-specific"/> -->
+	</target>
+	
+	
+	<!-- Target copies all the jsps,xmls, properties etc to out directory --> 
+	<target name="update-env-specific">
+		<copyfile dest="${out.properties.dir}/env.properties" src="${src.env.config.dir}/${env}/env.properties" forceoverwrite="true"/>
+		<copyfile dest="${out.properties.dir}/email.properties" src="${src.env.config.dir}/${env}/email.properties" forceoverwrite="true"/>
+		<copyfile dest="${out.conf.dir}/log4j.xml" src="${src.env.config.dir}/${env}/log4j.xml" forceoverwrite="true"/>
+		<copyfile dest="${out.properties.dir}/database.properties" src="${src.env.config.dir}/${env}/database.properties" forceoverwrite="true"/>
+	</target>
+	
+	<!-- Target compile the java source files -->
+	<target name="compile">
+		<echo message="Compiling the JAVA classes"/>
+		<javac srcdir="${src.java.dir}" destdir="${out.web-inf.classes.dir}" includeantruntime="false" executable="${env.java_home}/bin/javac">
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+	
+	<target name="test-compile">
+		<mkdir dir="test/classes"/>
+		<javac srcdir="${src.test.dir}" destdir="test/classes" includeantruntime="false" executable="${env.java_home}/bin/javac">
+			<classpath refid="classpath"/>
+		</javac>
+	</target>
+	<echo message="Compiling the JAVA test case classes"/>
+			
+	
+	
+	<!-- Target packages the jar files -->
+	<target name="package">
+		<echo message="Packaging JAR files - Do nothing. For future use"/>
+	</target>
+	
+	
+	<!-- Target generates the application WAR file -->
+	<target name="generate-war">
+		<echo message="Generating the WAR file"/>
+		<war destfile="${basedir}/${war.name}.war" basedir="${out.dir}"></war>
+	</target>
+	
+	<!-- Target compress the static contents -->
+	<target name="compress">
+		<echo message="Compressing the static contents"/>
+		<apply executable="java" parallel="false" dest="${out.static.dir}/stylesheets">
+		 	<fileset dir="${out.static.dir}/stylesheets" includes="**/*.css" />
+	        <arg line="-jar"/>
+	        <arg path="tools/yuicompressor-2.3.5.jar" />
+		 	<arg line="--nomunge"/>
+ 	       	<srcfile/>
+ 	        <arg line="-o"/>		 	
+			<mapper type="glob" from="*.css" to="*.mincss"/>
+ 	        <targetfile/>
+	    </apply>
+		<apply executable="java" parallel="false" dest="${out.static.dir}/jscripts">
+		 	<fileset dir="${out.static.dir}/jscripts" includes="**/*.js" />
+	        <arg line="-jar"/>
+	        <arg path="tools/yuicompressor-2.3.5.jar" />
+		 	<arg line="--nomunge"/>
+ 	       	<srcfile/>
+ 	        <arg line="-o"/>		 	
+			<mapper type="glob" from="*.js" to="*.minjs"/>
+ 	        <targetfile/>
+	    </apply>
+		<delete>
+			<fileset dir="${out.static.dir}/stylesheets/">
+				<include name="**/*.css"/>
+			</fileset>
+			<fileset dir="${out.static.dir}/jscripts/">
+				<include name="**/*.js"/>
+			</fileset>
+		</delete>
+		<copy todir="${out.static.dir}/stylesheets/">
+	      <fileset dir="${out.static.dir}/stylesheets/">
+	        <include name="**/*.mincss"/>
+	      </fileset>
+	      <globmapper from="*.mincss" to="*.css"/>
+	    </copy>
+		<copy todir="${out.static.dir}/jscripts">
+	      <fileset dir="${out.static.dir}/jscripts/">
+	        <include name="**/*.minjs"/>
+	      </fileset>
+	      <globmapper from="*.minjs" to="*.js"/>
+	    </copy>
+		<delete>
+			<fileset dir="${out.static.dir}/stylesheets/">
+				<include name="**/*.mincss"/>
+			</fileset>
+			<fileset dir="${out.static.dir}/jscripts/">
+				<include name="**/*.minjs"/>
+			</fileset>
+		</delete>
+	</target>
+	
+	<target name="run-cucumber" depends="test-compile">
+	        <!-- <mkdir dir="bin/cucumber-junit-report"/> -->
+	        <java classname="cucumber.api.cli.Main" fork="true" failonerror="false" resultproperty="cucumber.exitstatus">
+	            <classpath refid="classpath"/>
+	            <arg value="././resources/"/>
+	        	<arg value="--format"/>
+	        	<arg value="pretty"/>
+	        	<arg value="--format"/>
+	        	<arg value="json:test/json/"/>
+	        	<arg value="--glue"/>
+	        	<arg value="test.feature.login"/>
+	        </java>
+	</target>
+	
+	<!-- Target performs the complete build -->
+	<target name="build">
+		<echo message="Starting ${app.name} build"/>
+		<antcall target="clean"/>
+		<antcall target="prepare"/>
+		<!-- <antcall target="compress"/> -->
+		<antcall target="compile"/>
+		<antcall target="test-compile"/>
+		<antcall target="run-cucumber"/>
+		<antcall target="package"/>
+		<antcall target="generate-war"/>
+		<!-- <antcall target="clean"/> -->	
+	</target>
+</project>
