@@ -135,7 +135,7 @@
 	        	<arg value="--format"/>
 	        	<arg value="pretty"/>
 	        	<arg value="--format"/>
-	        	<arg value="json:test/json/"/>
+	        	<arg value="json:test/login.json"/>
 	        	<arg value="--glue"/>
 	        	<arg value="test.feature.login"/>
 	        </java>
