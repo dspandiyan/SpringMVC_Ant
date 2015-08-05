@@ -1,7 +1,36 @@
 <?xml version="1.0"?>
-<project name="InSight360" basedir="." default="build">
+<project name="InSight360" basedir="." default="build" xmlns:sonar="antlib:org.sonar.ant">
 	<property environment="env"/>
 	<property file="build.properties"/>
+	
+	<!-- Sonar related properties starts here-->
+		<property name="sonar.jdbc.url" value="jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"/>
+		<!-- <property name="sonar.db.driverClass" value="com.mysql.jdbc.Driver"/> -->
+		<property name="sonar.jdbc.username" value="root"/>
+		<property name="sonar.jdbc.password" value="admin"/>
+		<property name="sonar.web.url" value="http://localhost:9000"/>
+		<property name="ant.home" value="C:\apache-ant-1.9.2"/>
+	
+	
+		<property name="sonar.projectKey" value="com.deloitte.springmvc:SpringMVC_Ant" />
+		<property name="sonar.projectName" value="Simple Java Project analyzed with the SonarQube Ant Task" />
+		<property name="sonar.projectVersion" value="1.0" />
+		<property name="sonar.language" value="java" />
+		<property name="sonar.sources" value="src" />
+	
+	<!-- Sonar related properties ends here-->
+	
+	<target name="sonar" depends="compile" description="Sonar Static Code Analysis">
+		<echo message="Started sonar job"></echo>
+		<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+			<classpath path="${ant.home}\lib\sonar-ant-task-2.2.jar" />
+		</taskdef>
+		<sonar:sonar/>
+		<echo message="ended sonar job"></echo>
+	</target>
+	
+	
+	
 	
 	<path id="classpath">
 		<fileset dir="${src.lib.dir}">
@@ -128,7 +157,6 @@
 	</target>
 	
 	<target name="run-cucumber" depends="test-compile">
-	        <!-- <mkdir dir="bin/cucumber-junit-report"/> -->
 	        <java classname="cucumber.api.cli.Main" fork="true" failonerror="false" resultproperty="cucumber.exitstatus">
 	            <classpath refid="classpath"/>
 	            <arg value="././resources/"/>
@@ -149,9 +177,10 @@
 		<!-- <antcall target="compress"/> -->
 		<antcall target="compile"/>
 		<antcall target="test-compile"/>
-		<antcall target="run-cucumber"/>
+		<!-- <antcall target="run-cucumber"/> -->
 		<antcall target="package"/>
 		<antcall target="generate-war"/>
+		<antcall target="sonar"/>
 		<!-- <antcall target="clean"/> -->	
 	</target>
 </project>

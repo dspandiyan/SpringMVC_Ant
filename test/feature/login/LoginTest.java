@@ -8,7 +8,7 @@ import cucumber.api.junit.Cucumber;
 @RunWith(Cucumber.class)
 @CucumberOptions(
 		features="src/test/resources",
-		format = {"pretty", "json:target/login_test.json"}
+		format = {"pretty", "json:test/login_test.json"}
 )
 public class LoginTest {
 
